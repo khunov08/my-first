@@ -1,0 +1,57 @@
+{% extends 'files/base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Файлы на сервере</h2>
+<table class="files-table" >
+<thead>
+<tr>
+	<th>Наименование</th>
+	<th>Размер (байт)</th>
+	<th></th>
+</tr>
+</thead>
+
+<tbody id="f-list-table">
+{% for f in files %}
+<tr class="files-row" id="f-row-{{ f.id }}">
+	<td class="file-name-outer"><a class="file-name" href="{{ f.url }}">{{ f.name }}</a></td>
+	<td class="file-size">{{ f.size }}</td>
+	<td class="buttons">
+		<form method="post" action="{% url 'files:del' %}" class="file-del-form">
+			{% csrf_token %}
+			<input type="hidden" name="filename" value="{{ f.name }}" class="file-del-filename">
+			<button type="submit" class="file-del">Удалить (без ajax)</button>
+			<button type="button" class="file-del-ajax" id="f-del-{{ f.id }}">Удалить (ajax)</button>
+		</form>
+	</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+
+<form method="post" action="{% url 'files:add' %}" enctype="multipart/form-data">
+{% csrf_token %}
+<div>
+	<h3>Добавить новый файл (без ajax)</h3>
+	<input type="file" name="file" class="file-add-input">
+	<button type="submit" class="file-add-btn">Загрузить</button>
+</div>
+</form>
+
+<form method="post" action="{% url 'files:add' %}" enctype="multipart/form-data" id="f-add-form">
+{% csrf_token %}
+<div>
+	<h3>Добавить новый файл (ajax)</h3>
+	<input type="file" name="file" class="file-add-input" id="f-add-input">
+	<button type="button" class="file-add-btn" id="f-add-btn">Загрузить</button>
+</div>
+</form>
+
+
+{% endblock content %}
+
+{% block javascript %}
+	<script type="text/javascript" src="{% static 'js/files.js' %}"></script>
+{% endblock javascript %}
